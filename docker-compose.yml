@@ -1,22 +1,22 @@
 version: "3.8"
 
 services:
-  selfbudget:
+  expensely:
     build: .
-    container_name: selfbudget
+    container_name: expensely
     ports:
       - "32773:3000"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.budget.entrypoints=http"
-      - "traefik.http.routers.budget.rule=Host(`budget.local.jarvis.place`)"
-      - "traefik.http.middlewares.budget-https-redirect.redirectscheme.scheme=https"
-      - "traefik.http.routers.budget.middlewares=budget-https-redirect"
-      - "traefik.http.routers.budget-secure.entrypoints=https"
-      - "traefik.http.routers.budget-secure.rule=Host(`budget.local.jarvis.place`)"
-      - "traefik.http.routers.budget-secure.tls=true"
-      - "traefik.http.routers.budget-secure.service=budget"
-      - "traefik.http.services.budget.loadbalancer.server.port=3000"
+      - "traefik.http.routers.expensely.entrypoints=http"
+      - "traefik.http.routers.expensely.rule=Host(`expensely.local.jarvis.place`)"
+      - "traefik.http.middlewares.expensely-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.expensely.middlewares=expensely-https-redirect"
+      - "traefik.http.routers.expensely-secure.entrypoints=https"
+      - "traefik.http.routers.expensely-secure.rule=Host(`expensely.local.jarvis.place`)"
+      - "traefik.http.routers.expensely-secure.tls=true"
+      - "traefik.http.routers.expensely-secure.service=expensely"
+      - "traefik.http.services.expensely.loadbalancer.server.port=3000"
       - "traefik.docker.network=proxy"
     environment:
       - NODE_ENV=production
@@ -24,6 +24,8 @@ services:
     restart: unless-stopped
     networks:
       - proxy
+    depends_on:
+      - pocketbase
   pocketbase:
     image: ghcr.io/muchobien/pocketbase:latest
     container_name: pocketbase

@@ -1,8 +1,13 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect, useMemo } from "react";
 import { redirect } from "@tanstack/react-router";
+import PocketBase from "pocketbase";
+
+// Initialize PocketBase client
+const pb = new PocketBase(import.meta.env.VITE_API_BASE_URL);
 
 export const AuthContext = createContext({
   user: null,
+  pb: null,
   isLoading: true,
   login: async () => {},
   logout: async () => {},
@@ -11,62 +16,73 @@ export const AuthContext = createContext({
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [pbInstance] = useState(() => pb);
 
   // Check if user is logged in on initial load
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        // TODO: Replace with your actual token verification API call
-        // const response = await fetch('/api/auth/me');
-        // const data = await response.json();
-        // if (data.user) {
-        //   setUser(data.user);
-        // }
+        // Check if we have a valid auth store
+        if (pbInstance.authStore.isValid) {
+          // Get the auth record
+          const authData = pbInstance.authStore.record;
+          if (authData) {
+            setUser(authData);
+          }
+        }
       } catch (error) {
         console.error("Auth check failed:", error);
       } finally {
+        console.log("Auth check complete");
         setIsLoading(false);
       }
     };
 
     checkAuth();
-  }, []);
+  }, [pbInstance]);
 
-  const login = async (userData) => {
+  const login = async ({ email, password }) => {
     try {
-      // TODO: Replace with your actual login API call
-      // const response = await fetch('/api/auth/login', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(credentials),
-      // });
-      // const data = await response.json();
-      // setUser(data.user);
-
-      // For now, just set the user data directly
-      setUser(userData);
+      const authData = await pbInstance
+        .collection("users")
+        .authWithPassword(email, password);
+      setUser(authData.record);
       return { success: true };
     } catch (error) {
       console.error("Login failed:", error);
-      return { success: false, error: error.message };
+      return {
+        success: false,
+        error:
+          error.message || "Failed to log in. Please check your credentials.",
+      };
     }
   };
 
   const logout = async () => {
     try {
-      // TODO: Replace with your actual logout API call
-      // await fetch('/api/auth/logout', { method: 'POST' });
+      pbInstance.authStore.clear();
       setUser(null);
       redirect({ to: "/login" });
     } catch (error) {
       console.error("Logout failed:", error);
+      throw error;
     }
   };
 
+  // Memoize context value to prevent unnecessary re-renders
+  const contextValue = useMemo(
+    () => ({
+      user,
+      pb: pbInstance,
+      isLoading,
+      login,
+      logout,
+    }),
+    [user, pbInstance, isLoading]
+  );
+
   return (
-    <AuthContext.Provider value={{ user, isLoading, login, logout }}>
-      {children}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
   );
 };
 

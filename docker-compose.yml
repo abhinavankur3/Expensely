@@ -1,0 +1,30 @@
+version: "3.8"
+
+services:
+  selfbudget:
+    build: .
+    container_name: selfbudget
+    ports:
+      - "32773:3000"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.budget.entrypoints=http"
+      - "traefik.http.routers.budget.rule=Host(`budget.local.jarvis.place`)"
+      - "traefik.http.middlewares.budget-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.budget.middlewares=budget-https-redirect"
+      - "traefik.http.routers.budget-secure.entrypoints=https"
+      - "traefik.http.routers.budget-secure.rule=Host(`budget.local.jarvis.place`)"
+      - "traefik.http.routers.budget-secure.tls=true"
+      - "traefik.http.routers.budget-secure.service=budget"
+      - "traefik.http.services.budget.loadbalancer.server.port=3000"
+      - "traefik.docker.network=proxy"
+    environment:
+      - NODE_ENV=production
+      - VITE_API_BASE_URL=http://192.168.29.11:8090
+    restart: unless-stopped
+    networks:
+      - proxy
+
+networks:
+  proxy:
+    external: true

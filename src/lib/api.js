@@ -29,7 +29,7 @@ export const getRecentExpenses = async (pb, options = {}) => {
     }
     const records = await pb.collection("expenses").getList(1, 6, {
       filter: `userId = "${pb.authStore.record.id}"`,
-      sort: "-amount",
+      sort: "-created",
       requestKey: "getRecentExpenses",
       ...options,
     });

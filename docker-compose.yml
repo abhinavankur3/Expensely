@@ -25,7 +25,7 @@ services:
     networks:
       - proxy
     depends_on:
-      - pocketbase
+      - pocketbase-expensely
   pocketbase-expensely:
     image: ghcr.io/muchobien/pocketbase:latest
     container_name: pocketbase-expensely

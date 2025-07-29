@@ -1,6 +1,14 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Menu, X, Home, PlusCircle, LineChart, Settings, LogOut } from "lucide-react";
+import {
+  Menu,
+  X,
+  Home,
+  TrendingUp,
+  LineChart,
+  Settings,
+  LogOut,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/auth-context";
 
@@ -9,15 +17,15 @@ export function MobileHeader() {
   const { logout } = useAuth();
 
   const navItems = [
-    { name: 'Dashboard', icon: Home, href: '/dashboard' },
-    { name: 'Add Expense', icon: PlusCircle, href: '/dashboard/expenses/add' },
-    { name: 'Analytics', icon: LineChart, href: '/dashboard/analytics' },
-    { name: 'Settings', icon: Settings, href: '/dashboard/settings' },
+    { name: "Dashboard", icon: Home, href: "/dashboard" },
+    { name: "Expenses", icon: TrendingUp, href: "/dashboard/expenses" },
+    { name: "Analytics", icon: LineChart, href: "/dashboard/analytics" },
+    { name: "Settings", icon: Settings, href: "/dashboard/settings" },
   ];
 
   const handleLogout = async () => {
     await logout();
-    window.location.href = '/login';
+    window.location.href = "/login";
   };
 
   return (
@@ -47,7 +55,7 @@ export function MobileHeader() {
                 to={item.href}
                 className="group flex items-center px-3 py-3 text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-blue-600 rounded-md"
                 activeProps={{
-                  className: "bg-blue-50 text-blue-600"
+                  className: "bg-blue-50 text-blue-600",
                 }}
                 onClick={() => setMobileMenuOpen(false)}
               >

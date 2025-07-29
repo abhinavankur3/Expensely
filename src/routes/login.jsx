@@ -27,9 +27,7 @@ function LoginPage() {
 
   // Handle redirect if already authenticated
   useEffect(() => {
-    console.log("pb.authStore.isValid", pb.authStore.isValid);
     if (pb.authStore.isValid) {
-      console.log("User is logged in, redirecting to dashboard");
       navigate({ to: "/dashboard" });
     }
   }, [navigate, pb.authStore.isValid]);
@@ -42,7 +40,6 @@ function LoginPage() {
   //   );
   // }
 
-  console.log("User is not logged in");
   const randomQuote = {
     text: "The best way to predict the future is to create it.",
     author: "Peter Drucker",
@@ -60,7 +57,6 @@ function LoginPage() {
     setIsLoading(true);
     try {
       const result = await login({ email, password });
-      console.log(result);
       if (result.success) {
         navigate({ to: "/dashboard" });
       } else {

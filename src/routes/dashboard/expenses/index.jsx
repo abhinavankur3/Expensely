@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
 import { Button } from "@/components/ui/button";
@@ -11,6 +12,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useAuth } from "@/contexts/auth-context";
+import { getExpenses } from "@/lib/api";
+import { format } from "date-fns";
 
 export const Route = createFileRoute("/dashboard/expenses/")({
   component: ExpensesPageWithLayout,
@@ -18,40 +22,40 @@ export const Route = createFileRoute("/dashboard/expenses/")({
 
 function ExpensesPage() {
   // Mock data - replace with actual data from your API
-  const expenses = [
-    {
-      id: 1,
-      description: "Rent",
-      amount: 1000.0,
-      type: "fixed",
-      category: "Housing",
-      date: "2025-07-01",
-    },
-    {
-      id: 2,
-      description: "Groceries",
-      amount: 250.75,
-      type: "variable",
-      category: "Food",
-      date: "2025-07-15",
-    },
-    {
-      id: 3,
-      description: "Internet",
-      amount: 60.0,
-      type: "fixed",
-      category: "Utilities",
-      date: "2025-07-05",
-    },
-    {
-      id: 4,
-      description: "Dining Out",
-      amount: 85.5,
-      type: "variable",
-      category: "Food",
-      date: "2025-07-20",
-    },
-  ];
+  const [expenses, setExpenses] = useState([]);
+
+  const { pb } = useAuth();
+
+  useEffect(() => {
+    const abortController = new AbortController();
+    let isMounted = true;
+
+    const fetchExpenses = async () => {
+      try {
+        const expenses = await getExpenses(
+          pb,
+          {
+            signal: abortController.signal,
+          },
+          false
+        );
+        if (isMounted) {
+          setExpenses(expenses);
+        }
+      } catch (error) {
+        if (error.name !== "AbortError") {
+          console.error("Error fetching expenses:", error);
+        }
+      }
+    };
+
+    fetchExpenses();
+
+    return () => {
+      isMounted = false;
+      abortController.abort();
+    };
+  }, []);
 
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat("en-US", {
@@ -86,14 +90,13 @@ function ExpensesPage() {
             </TableHeader>
             <TableBody>
               {expenses.map((expense) => (
-                <TableRow
-                  key={expense.id}
-                  className="hover:bg-black hover:text-white"
-                >
+                <TableRow key={expense.id}>
                   <TableCell>{expense.description}</TableCell>
                   <TableCell>{expense.category}</TableCell>
                   <TableCell>{expense.type}</TableCell>
-                  <TableCell>{expense.date}</TableCell>
+                  <TableCell>
+                    {format(expense.expenseDate, "dd MMM yyyy")}
+                  </TableCell>
                   <TableCell>{formatCurrency(expense.amount)}</TableCell>
                 </TableRow>
               ))}

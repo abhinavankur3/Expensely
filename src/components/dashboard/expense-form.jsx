@@ -39,7 +39,7 @@ const expenseSchema = z.object({
   description: z.string().min(1, "Description is required"),
   type: z.enum(["fixed", "variable"]),
   category: z.string().min(1, "Category is required"),
-  date: z.date({
+  expenseDate: z.date({
     required_error: "A date is required.",
   }),
   notes: z.string().optional(),
@@ -53,6 +53,8 @@ const categories = {
     "Phone",
     "Insurance",
     "Subscription",
+    "EMI",
+    "Investment",
   ],
   variable: [
     "Groceries",
@@ -71,7 +73,6 @@ export function ExpenseForm({ onSubmit, isSubmitting, defaultValues }) {
     resolver: zodResolver(expenseSchema),
     defaultValues: defaultValues || {
       type: "fixed",
-      date: new Date(),
       ...defaultValues,
     },
   });
@@ -166,7 +167,7 @@ export function ExpenseForm({ onSubmit, isSubmitting, defaultValues }) {
 
           <FormField
             control={form.control}
-            name="date"
+            name="expenseDate"
             render={({ field }) => (
               <FormItem className="flex flex-col">
                 <FormLabel>Date</FormLabel>

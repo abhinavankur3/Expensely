@@ -3,6 +3,7 @@ import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
 import { RouterProvider, createRouter } from "@tanstack/react-router";
 import { AuthProvider, useAuth } from "@/contexts/auth-context";
+import { Toaster } from "sonner";
 
 // Import the generated route tree
 import { routeTree } from "./routeTree.gen";
@@ -20,6 +21,7 @@ function App() {
   const auth = useAuth();
   return (
     <AuthProvider>
+      <Toaster position="top-right" richColors />
       <RouterProvider router={router} context={{ auth }} />
     </AuthProvider>
   );

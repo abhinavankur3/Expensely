@@ -3,24 +3,31 @@ import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
 import { ExpenseForm } from "@/components/dashboard/expense-form";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
-
+import { createExpense } from "@/lib/api";
+import { useAuth } from "@/contexts/auth-context";
+import { toast } from "sonner";
 export const Route = createFileRoute("/dashboard/expenses/add")({
   component: AddExpensePageWithLayout,
 });
 
 function AddExpensePage() {
   const navigate = useNavigate();
+  const { pb } = useAuth();
 
-  const handleSubmit = async (data) => {
-    console.log("Expense data:", data);
-    // TODO: Implement API call to save the expense
-    // await pb.collection('expenses').create(data);
+  const handleSubmit = (data) => {
+    const toastId = toast.loading("Adding expense...");
 
-    // Show success message
-    // toast.success("Expense added successfully!");
-
-    // Redirect to expenses list
-    navigate({ to: "/dashboard/expenses" });
+    createExpense(pb, data)
+      .then(() => {
+        toast.success("Expense added successfully!", { id: toastId });
+        navigate({ to: "/dashboard/expenses" });
+      })
+      .catch((error) => {
+        console.error("Error creating expense:", error);
+        toast.error("Failed to add expense. Please try again.", {
+          id: toastId,
+        });
+      });
   };
 
   return (

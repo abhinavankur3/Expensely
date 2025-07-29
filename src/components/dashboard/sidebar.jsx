@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
-import { Home, PlusCircle, LineChart, Settings, LogOut } from "lucide-react";
+import { Home, LineChart, Settings, LogOut, TrendingUp } from "lucide-react";
 import { useAuth } from "@/contexts/auth-context";
 
 export function Sidebar() {
@@ -14,7 +14,7 @@ export function Sidebar() {
 
   const navItems = [
     { name: "Dashboard", icon: Home, href: "/dashboard" },
-    { name: "Add Expense", icon: PlusCircle, href: "/dashboard/expenses/add" },
+    { name: "Expenses", icon: TrendingUp, href: "/dashboard/expenses" },
     { name: "Analytics", icon: LineChart, href: "/dashboard/analytics" },
     { name: "Settings", icon: Settings, href: "/dashboard/settings" },
   ];
@@ -23,11 +23,8 @@ export function Sidebar() {
     (item) => item.href === window.location.pathname
   );
   return (
-    <div className="hidden md:flex md:flex-col w-64 border-r bg-white">
+    <div className="hidden md:flex md:flex-col w-64 bg-white mt-16">
       <div className="flex-1 flex flex-col min-h-0">
-        <div className="flex items-center h-16 flex-shrink-0 px-4 bg-blue-600">
-          <h1 className="text-white text-xl font-bold">Expense Tracker</h1>
-        </div>
         <div className="flex-1 flex flex-col overflow-y-auto">
           <nav className="flex-1 px-2 py-4 space-y-1">
             {navItems.map((item) => (
@@ -42,10 +39,10 @@ export function Sidebar() {
             ))}
           </nav>
         </div>
-        <div className="p-4 border-t">
+        <div className="p-4">
           <Button
-            variant="ghost"
-            className="w-full justify-start text-gray-700 hover:bg-gray-100"
+            variant="destructive"
+            className="w-full justify-start text-white hover:bg-gray-100 hover:text-red-600"
             onClick={handleLogout}
           >
             <LogOut className="mr-3 h-5 w-5" />

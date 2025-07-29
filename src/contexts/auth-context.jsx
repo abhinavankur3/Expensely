@@ -33,7 +33,6 @@ export const AuthProvider = ({ children }) => {
       } catch (error) {
         console.error("Auth check failed:", error);
       } finally {
-        console.log("Auth check complete");
         setIsLoading(false);
       }
     };

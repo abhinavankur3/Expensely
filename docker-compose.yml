@@ -5,7 +5,7 @@ services:
     build: .
     container_name: expensely
     ports:
-      - "32773:3000"
+      - "32663:3000"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.expensely.entrypoints=http"

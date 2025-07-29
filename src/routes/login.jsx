@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/auth-context";
 import {
   Card,
@@ -11,7 +11,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, Loader2 } from "lucide-react";
 
 export const Route = createFileRoute("/login")({
   component: LoginPage,
@@ -25,16 +25,24 @@ function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const { login, isLoading: authLoading, pb } = useAuth();
 
-  if (authLoading) {
-    return <div>Loading...</div>;
-  }
+  // Handle redirect if already authenticated
+  useEffect(() => {
+    console.log("pb.authStore.isValid", pb.authStore.isValid);
+    if (pb.authStore.isValid) {
+      console.log("User is logged in, redirecting to dashboard");
+      navigate({ to: "/dashboard" });
+    }
+  }, [navigate, pb.authStore.isValid]);
 
-  if (pb.authStore.isValid) {
-    console.log("User is logged in");
-    navigate({ to: "/dashboard" });
-    return;
-  }
+  // if (authLoading) {
+  //   return (
+  //     <div className="min-h-screen flex items-center justify-center">
+  //       <Loader2 className="h-8 w-8 animate-spin" />
+  //     </div>
+  //   );
+  // }
 
+  console.log("User is not logged in");
   const randomQuote = {
     text: "The best way to predict the future is to create it.",
     author: "Peter Drucker",

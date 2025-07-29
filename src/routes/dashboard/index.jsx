@@ -1,18 +1,16 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useAuth } from "@/contexts/auth-context";
+import { createFileRoute } from "@tanstack/react-router";
+import { ExpenseOverview } from "@/components/dashboard/expense-overview";
+import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
 
+// This route is now a child of the _dashboard layout route
 export const Route = createFileRoute("/dashboard/")({
-  component: DashboardIndexRouteComponent,
+  component: DashboardPage,
 });
 
-function DashboardIndexRouteComponent() {
-  const navigate = useNavigate();
-  const { pb } = useAuth();
-
-  if (!pb.authStore.isValid) {
-    navigate({ to: "/login" });
-    return;
-  }
-
-  return <div>Hello {pb.authStore.record.email}!</div>;
+function DashboardPage() {
+  return (
+    <DashboardLayout>
+      <ExpenseOverview />
+    </DashboardLayout>
+  );
 }

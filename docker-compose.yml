@@ -20,8 +20,18 @@ services:
       - "traefik.docker.network=proxy"
     environment:
       - NODE_ENV=production
-      - VITE_API_BASE_URL=http://192.168.29.11:8090
+      - VITE_API_BASE_URL=http://pocketbase:8090
     restart: unless-stopped
+    networks:
+      - proxy
+  pocketbase:
+    image: ghcr.io/muchobien/pocketbase:latest
+    container_name: pocketbase
+    restart: unless-stopped
+    ports:
+      - "8090:8090"
+    volumes:
+      - ./pb_data:/pb_data
     networks:
       - proxy
 
